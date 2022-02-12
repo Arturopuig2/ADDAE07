@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+	<title>EL TIEMPO</title>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script type="text/javascript">
+		
+		function getProvinciaInfo(){
+			var CodigoProvincia=document.getElementById('CodigoProvincia').value;
+			alert("https://www.el-tiempo.net/api/json/v2/provincias/"+CodigoProvincia);
+			axios
+			.get("https://www.el-tiempo.net/api/json/v2/provincias/"+CodigoProvincia)
+			.then(response => {
+				console.log(response.data);
+			//	document.getElementById('title').value=response.data.title;
+				document.getElementById('provincia').value=response.data.provincia.NOMBRE_PROVINCIA;
+				document.getElementById('today').value=response.data.today.p;
+				document.getElementById('tomorrow').value=response.data.tomorrow.p;
+			//	document.getElementById('ciudades').value=
+				response.data.ciudades[0].name+" Máxima: "+response.data.ciudades[0].temperatures.max+" Mínima: "+response.data.ciudades[0].temperatures.min+"\n"+
+				response.data.ciudades[1].name+" Máxima: "+response.data.ciudades[1].temperatures.max+" Mínima: "+response.data.ciudades[1].temperatures.min;				
+			})
+			.catch(error=>{
+				console.error(error);
+				//document.getElementById('title').value="ERROR EN LA CONSULTA: "+error;
+				document.getElementById('provincia').value="ERROR EN LA CONSULTA: "+error;				
+				document.getElementById('today').value="ERROR EN LA CONSULTA: "+error;
+				document.getElementById('tomorrow').value="ERROR EN LA CONSULTA: "+error;
+				//document.getElementById('ciudades').value="ERROR EN LA CONSULTA: "+error;
+			});
+		}
+	</script>
+
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+		<script type="text/javascript">
+			function guardarInfo(){
+				var provincia=document.getElementById('provincia').value;
+				var today=document.getElementById('today').value;
+				var tomorrow=document.getElementById('tomorrow').value;
+				$.ajax({
+					type:"POST",
+					url: "ejemploPHP.php",
+					data: {provincia: provincia, today: today, tomorrow: tomorrow},
+					
+					success: function(response){ 
+						alert(response);
+					},
+					error:function(){
+						alert("Error en el envío");
+					}
+				});
+			}
+		</script>
+</head>
+<body>
+	<h1>EL TIEMPO EN TU PROVINCIA</h1>
+		<div>
+			<script>
+			date = new Date().toLocaleDateString();
+			document.write(date);
+			</script>
+		</div>
+	<p>Indica el código con dos dígitos</p>
+	<p>
+		<input type="text" value="" id="CodigoProvincia" placeholder="Dos dígitos">
+		<button id="botonBusquedaProvincia" onclick="getProvinciaInfo()">Buscar</button>
+	</p>
+	<textarea id="provincia" rows="1" style= " border: none; width:100%"></textarea>	
+	<!-- <textarea id="title" rows="1" style= " border: none; width:100%"></textarea>
+ -->
+ 	<h3>HOY</h3>
+	<textarea id="today" rows="5" style="width:100%"></textarea>
+	<!-- <textarea id="ciudades" rows="5" style="width:100%"></textarea> -->
+
+ 	<h3>MAÑANA</h3>
+	<textarea id="tomorrow" rows="5" style="width:100%"></textarea>
+
+	<p><button id="botonGuardar" onclick="guardarInfo()"> Guardar en mi BDD </button></p>
+
+</body>
+</html>
